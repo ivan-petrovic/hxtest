@@ -1,0 +1,7 @@
+---
+- name: Configure minimal container environment
+  hosts: all
+  become: true
+
+  roles:
+    - docker

@@ -1,0 +1,11 @@
+---
+docker_compose_version: "2.20.2"
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+dependencies:
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
