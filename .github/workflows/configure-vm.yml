@@ -40,19 +40,32 @@ jobs:
       - name: Check Ansible version
         run: ansible --version
 
-      - name: Add SSH private key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #   - name: Add SSH private key
+    #     uses: webfactory/ssh-agent@v0.9.0
+    #     with:
+    #       ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Write SSH key to file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Create Ansible inventory
         working-directory: ./ansible
         run: |
           echo "[azure_vm]" > inventory.ini
-          echo "$VM_IP ansible_user=azureuser ansible_ssh_private_key_file=/github/home/.ssh/id_rsa" >> inventory.ini
+          echo "$VM_IP ansible_user=azureuser" >> inventory.ini
+
+      - name: Check Ansible inventory file
+        working-directory: ./ansible
+        run: cat inventory.ini
 
       - name: Run Ansible Playbook
         working-directory: ./ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
-        run: ansible-playbook -i inventory.ini playbook.yml
+          OAUTH2_COOKIE_SECRET: ${{ secrets.OAUTH2_COOKIE_SECRET }}
+        run: ansible-playbook -i -vvv inventory.ini playbook.yml
+
+#   echo "$VM_IP ansible_user=azureuser ansible_ssh_private_key_file=/github/home/.ssh/id_rsa" >> inventory.ini
