@@ -15,7 +15,7 @@
     mode: '0644'
   loop:
     - docker-compose.yml
-    - keycloak-realm.json
+    - myrealm-realm.json
     - nginx.conf
 
 - name: Copy static web content
