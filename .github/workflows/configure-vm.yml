@@ -72,4 +72,4 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
           OAUTH2_COOKIE_SECRET: ${{ secrets.OAUTH2_COOKIE_SECRET }}
-        run: ansible-playbook -i inventory.ini -vvv playbook.yml
+        run: ansible-playbook -i inventory.ini playbook.yml
