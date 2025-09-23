@@ -13,7 +13,7 @@ services:
       - keycloak-net
 
   keycloak:
-    image: quay.io/keycloak/keycloak:21.1.1
+    image: quay.io/keycloak/keycloak:26.3.4
     restart: unless-stopped
     container_name: keycloak
     command: ["start-dev", "--import-realm", "--http-enabled=true", "--health-enabled=true", "--http-port=8080"]
@@ -26,7 +26,6 @@ services:
       KC_PROXY: passthrough
       KC_BOOTSTRAP_ADMIN_USERNAME: {{ keycloak_admin_user }}
       KC_BOOTSTRAP_ADMIN_PASSWORD: {{ keycloak_admin_password }}
-      JAVA_OPTS: "-Xms256m -Xmx512m"
     volumes:
       - ./myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json:ro
     ports:
