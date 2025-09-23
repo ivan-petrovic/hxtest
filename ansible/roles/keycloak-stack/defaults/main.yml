@@ -1,0 +1,21 @@
+# Try to get PUBLIC_HOSTNAME from environment
+# If not set, default to ansible_host (public IP of the VM)
+public_hostname: "{{ lookup('env', 'PUBLIC_HOSTNAME') | default(ansible_host, true) }}"
+
+# Keycloak admin user
+keycloak_admin_user: "{{ lookup('env','KEYCLOAK_ADMIN_USER') | default('admin', true) }}"
+keycloak_admin_password: "{{ lookup('env','KEYCLOAK_ADMIN_PASSWORD') | default('AdminPassword123', true) }}"
+
+# Database
+postgres_db: keycloak
+postgres_user: "{{ lookup('env','POSTGRES_USER') | default('keycloak', true) }}"
+postgres_password: "{{ lookup('env','POSTGRES_PASSWORD') | default('keycloak', true) }}"
+
+# OAuth2 Proxy
+oauth2_client_id: "{{ lookup('env','OAUTH2_CLIENT_ID') | default('keycloak-client-id', true) }}"
+oauth2_client_secret: "{{ lookup('env','OAUTH2_CLIENT_SECRET') | default('keycloak-client-secret', true) }}"
+oauth2_cookie_secret: "{{ lookup('env','OAUTH2_COOKIE_SECRET') | default('', true) }}"
+
+# Demo user for myrealm
+user_name: "{{ lookup('env','USER_NAME') | default('user1', true) }}"
+user_password: "{{ lookup('env','USER_PASSWORD') | default('password', true) }}"

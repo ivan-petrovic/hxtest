@@ -1,0 +1,55 @@
+- name: Generate OAuth2 cookie secret if not provided
+  set_fact:
+    oauth2_cookie_secret: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
+  when: oauth2_cookie_secret == ''
+
+- name: Ensure target directory exists
+  file:
+    path: /opt/keycloak_stack
+    state: directory
+
+- name: Copy template files
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/keycloak_stack/{{ item }}"
+    mode: '0644'
+  loop:
+    - docker-compose.yml
+    - keycloak-realm.json
+    - nginx.conf
+
+- name: Copy static web content
+  copy:
+    src: ../web/
+    dest: /opt/keycloak_stack/web/
+    mode: '0644'
+
+- name: Start keycloak service first with docker-compose
+  shell: docker compose up keycloak -d
+  args:
+    chdir: /opt/keycloak_stack
+
+- name: Wait for Keycloak health endpoint
+  shell: curl -sSf http://localhost:8080/health/ready
+  register: result
+  retries: 10
+  delay: 10
+  until: result.rc == 0
+
+- name: Disable SSL requirement in Keycloak realm
+  shell: >
+    docker exec keycloak sh -c '
+      cd /opt/keycloak/bin &&
+      ./kcadm.sh config credentials --server http://localhost:8080 \
+        --realm master \
+        --user {{ keycloak_admin_user }} \
+        --password {{ keycloak_admin_password }} &&
+      ./kcadm.sh update realms/myrealm -s sslRequired=NONE
+    '
+  args:
+    executable: /bin/bash
+
+- name: Start rest of the stack with docker-compose
+  shell: docker compose up -d
+  args:
+    chdir: /opt/keycloak_stack
