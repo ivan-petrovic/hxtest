@@ -66,6 +66,6 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
           OAUTH2_COOKIE_SECRET: ${{ secrets.OAUTH2_COOKIE_SECRET }}
-        run: ansible-playbook -i -vvv inventory.ini playbook.yml
+        run: ansible-playbook -i inventory.ini -vvv playbook.yml
 
 #   echo "$VM_IP ansible_user=azureuser ansible_ssh_private_key_file=/github/home/.ssh/id_rsa" >> inventory.ini
