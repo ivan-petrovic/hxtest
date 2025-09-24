@@ -91,14 +91,14 @@ On the Azure VM, Docker Engine is installed, and services are orchestrated with 
 ```mermaid
 graph TD
     subgraph AzureVNet["Azure VNet (Private Subnet)"]
-        VM[Azure VM<br/>Public IP + NSG]
+        VM["Azure VM\nPublic IP + NSG"]
         
         subgraph Docker["Docker Bridge Network"]
-            KC[Keycloak]
-            PG[Postgres]
-            O2P[OAuth2 Proxy]
-            WEB[Static Website (Nginx)]
-            NGINX[Nginx Proxy]
+            KC["Keycloak"]
+            PG["Postgres"]
+            O2P["OAuth2 Proxy"]
+            WEB["Static Website - NGINX"]
+            NGINX["NGINX Proxy"]
         end
     end
 
@@ -123,13 +123,13 @@ graph TD
 
 ```mermaid
 flowchart TD
-    U[User Browser] -->|1. Visit http://PUBLIC_HOSTNAME/| NginxProxy[Nginx Proxy]
-    NginxProxy -->|2. Forward request| O2P[OAuth2 Proxy]
-    O2P -->|3. Redirect to login if not authenticated| KC[Keycloak]
+    U["User Browser"] -->|1. Visit http://PUBLIC_HOSTNAME/| NginxProxy["Nginx Proxy"]
+    NginxProxy -->|2. Forward request| O2P["OAuth2 Proxy"]
+    O2P -->|3. Redirect to login if not authenticated| KC["Keycloak"]
     KC -->|4. Redirect back with auth code| O2P
     O2P -->|5. Exchange code for tokens| KC
-    O2P -->|6. Validate token & set cookie| Web[Static Website (Nginx)]
-    Web -->|7. Return static page| U
+    O2P -->|6. Validate token & set cookie| WEB["Static Website - NGINX"]
+    WEB -->|7. Return static page| U
 ```
 
 ## Justification
