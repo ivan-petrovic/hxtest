@@ -90,8 +90,8 @@ On the Azure VM, Docker Engine is installed, and services are orchestrated with 
 
 ```mermaid
 graph TD
-    subgraph AzureVNet["Azure VNet <br> Private Subnet"]
-        VM["Azure VM <br> Public IP + NSG"]
+    subgraph AzureVNet["Azure VNet-Priv SN"]
+        VM["Azure VM + Public IP + NSG"]
         
         subgraph Docker["Docker Bridge Network"]
             KC["Keycloak"]
