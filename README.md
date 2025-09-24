@@ -2,9 +2,9 @@
 
 ## Running the Demo with GitHub Actions
 This project includes three GitHub Actions workflows:
-1. roll-out-vm - Creates an Azure environment with a virtual machine.
-2. configure-vm - Configures the VM by installing Docker and deploying a Keyclock-protected static web site.
-3. disassemble-vm - Destroys the Azure environment and removes the VM.
+1. **roll-out-vm** - Creates an Azure environment with a virtual machine.
+2. **configure-vm** - Configures the VM by installing Docker and deploying a Keyclock-protected static web site.
+3. **disassemble-vm** - Destroys the Azure environment and removes the VM.
 
 ### Required GitHub Secrets
 For these workflows to run successfully, the following GitHub secrets must be configured:
@@ -55,13 +55,14 @@ openssl rand -base64 32
 ```
 
 ### Accessing the Demo Website
-After running the `roll-out-vm` and `configure-vm` workflows, the static web site will be available at:
+After running the **roll-out-vm** and **configure-vm** workflows, the static web site will be available at:
 ```
 http://<VM_PUBLIC_IP>
 ```
 Authentication is handled via Keycloak. The default credentials are:
 * Username: `user1`
 * Password: `password`
+
 The VM's public IP can be found int the GitHub Actions logs::
 * in the `roll-out-vm` workflow -> `terraform apply` step (outputs at the end).
 * in the `configure-vm` workflow -> `ansible playbook run` step.
@@ -74,11 +75,11 @@ In Azure, the following infrastructure is provisioned:
 * A **Virtual Network (Vnet)** with a private subnet.
 * A **single VM** within the subnet, assigned a public IP address.
 * A **Network Security Group (NSG)** attached to the subnet, allowing inbound traffic only on:
-  * SSH (22)
-  * HTTP/HTTPS (80/443)
-  * Keycloak (8080)
+  * **SSH** (22)
+  * **HTTP/HTTPS** (80/443)
+  * **Keycloak** (8080)
 All other ports are blocked from the Internet. Specifically:
-* Postgres (5432) and OAuth2 Proxy (4180) are only accessible on the internal Docker bridge network.
+* **Postgres** (5432) and **OAuth2 Proxy** (4180) are only accessible on the internal Docker bridge network.
 
 ### Services on the VM
 On the Azure VM, Docker Engine is installed, and services are orchestrated with Docker Compose. The following containers are deployed (see `ansible\roles\keycloak-stack\templates\docker-compose.yml.j2`):
@@ -117,7 +118,7 @@ graph TD
 2. **Nginx** forwards the request to **OAuth2 Proxy**.
 3. **OAuth2 Proxy** checks for authentication. If the user is not logged in, it redirects to **Keycloak**.
 4. After login, **Keycloak** redirects the user back to **OAuth2 Proxy** with an authorization code (`/oauth2/callback`).
-5. **OAuth2 Proxy* exchanges the code for tokens with **Keycloak**.
+5. **OAuth2 Proxy** exchanges the code for tokens with **Keycloak**.
 6. Upon successful validation, **OAuth2 Proxy** sets a session cookie and forwards the original request to the upstream **web (Nginx)** container.
 7. The user sees static webpage.
 
@@ -143,8 +144,8 @@ The design choices it this project are justified as follows:
 * **Docker Engine (container runtime)**:
   * Chosen for its wide support, ease of installation (via Ansible), minimal overhead, and user-friendly experience for local development and operations.
   * Alternatives:
-    * Podman - lightweight and daemonless, but with smaller ecosystem adoption.
-    * containerd - highly efficient and used in Kubernetes environments, but less convenient for standalone setups.
+    * **Podman** - lightweight and daemonless, but with smaller ecosystem adoption.
+    * **containerd** - highly efficient and used in Kubernetes environments, but less convenient for standalone setups.
 * **Separation of workflows**:
   * While the `roll-out-vm` and `configure-vm` GitHub Actions could be combined into a signle workflow, we keep them separate to imporve flexibility during testing and development.
   * This allows provisioning the VM independently and experimenting manually without immediately applying the Ansible configuration step.
@@ -152,17 +153,19 @@ The design choices it this project are justified as follows:
 ## Extensibility
 The current setup is designed as a lightweight demo, but it can be extended in several ways to improve security, scalability, and production readiness:
 * **Enable TLS with Let’s Encrypt and Azure DNS**
+
 Secure the application with HTTPS certificates and integrate with Azure DNS for domain management.
 * **Manage sensitive variables more securely**
   * Use **Ansible Vault** for encrypted variables, or
   * Integrate with an **external secrets store** (e.g., Azure Key Vault).
 * **Scale Keycloak and the web application**
   * Run Keycloak on a dedicated VM.
-  * Use an Azure Load Balancer with Virtual Machine Scale Sets (VMSS) for the web application to enable auto-scaling.
+  * Use an **Azure Load Balancer** with **Virtual Machine Scale Sets (VMSS)** for the web application to enable auto-scaling.
 * **Adopt managed services for production**
 For a production-ready deployment, migrate to:
-  * Azure Kubernetes Service (AKS) for container orchestration.
-  * A managed database service (e.g., Azure Database for PostgreSQL).
+  * **Azure Kubernetes Service (AKS)** for container orchestration.
+  * A **managed database service** (e.g., Azure Database for PostgreSQL).
+
 This is not necessary for the demo setup, as it would add complexity and cost.
 
 ## Additional notes
@@ -173,9 +176,9 @@ The terraform backend uses an **Azure Storage account** and a **container** insi
 This allows multiple GitHub Actions workflows to share and update the same Terraform state.
 
 Resources required: 
-* Resource group (example: `rg-terraform-state`)
-* Storage account (example: `tfstatestorage`)
-* Container in the storage account (example: `tfstate`)
+* **Resource group** (e.g., `rg-terraform-state`)
+* **Storage account** (e.g., `tfstatestorage`)
+* **Storage Container** (e.g., `tfstate`)
 
 Create them via Azure CLI:
 ```
@@ -199,6 +202,7 @@ This demo imports a custom Keycloak realm: `myrealm` (see `ansible\roles\keycloa
 * These can be overridden using environment variables:
   * `USER_NAME`
   * `USER_PASSWORD`
+
 (defined in see `ansible\roles\keycloak-stack\defaults\main.yml`).
 
 ### Keycloak HTTPS
@@ -223,8 +227,10 @@ Several sensitive defaults can be overridden using environment variables (option
 az login
 ```
 Ensure your account has sufficient privileges.
+
 2. **Prepare Terraform state storage**
 Either use the Azure backend (see above) or comment out backend.tf to store the state locally.
+
 3. **Provision the environment**
 ```
 cd terraform
