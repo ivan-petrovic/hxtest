@@ -102,12 +102,12 @@ graph TD
         end
     end
 
-    Internet[[Internet]] -->|SSH (22), HTTP/HTTPS (80/443), Keycloak (8080)| VM
+    Internet[[Internet]] -->|"SSH 22, HTTP/HTTPS 80/443, Keycloak 8080"| VM
     VM --> Docker
 
     %% Internal connections
-    KC <-->|DB Connection (5432)| PG
-    O2P <-->|Auth Tokens| KC
+    KC <-->|"DB Connection 5432"| PG
+    O2P <-->|"Auth Tokens"| KC
     NGINX --> O2P
     O2P --> WEB
 ```
