@@ -1,7 +1,7 @@
 # HYLASTIX Test
 
 ## Running the Demo with GitHub Actions
-This project includes three GitHub Actions workflows:
+This project includes three GitHub Actions workflows, all of which must be started manually (`workflow_dispatch`) for better control:
 1. **roll-out-vm** - Creates an Azure environment with a virtual machine.
 2. **configure-vm** - Configures the VM by installing Docker and deploying a Keyclock-protected static web site.
 3. **disassemble-vm** - Destroys the Azure environment and removes the VM.
@@ -209,7 +209,8 @@ This demo imports a custom Keycloak realm: `myrealm` (see `ansible\roles\keycloa
 By default, Keycloak runs in HTTPS mode.
 
 For this demo, HTTPS is **disabled** after keycloak container becomes ready (configured in  `ansible\roles\keycloak-stack\tasks\main.yml`).
-* The Keycloak UI is than available at `http://<VM_PUBLIC_IP>:8080`.
+* The Keycloak UI is then available at `http://<VM_PUBLIC_IP>:8080`.
+* Default username and password for Keycloak: `admin` and `AdminPassword123`.
 * To encure reliability, Ansible checks the Keycloak health endpoint (up to 5 minutes), before starting dependent containers like OAuth2 Proxy.
 
 ### Customization of Sensitive Data
