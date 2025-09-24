@@ -32,7 +32,7 @@
 - name: Wait for Keycloak health endpoint
   shell: curl -sSf http://localhost:9000/health/ready
   register: result
-  retries: 20
+  retries: 30
   delay: 10
   until: result.rc == 0
 
@@ -44,7 +44,7 @@
         --realm master \
         --user {{ keycloak_admin_user }} \
         --password {{ keycloak_admin_password }} &&
-      ./kcadm.sh update realms/myrealm -s sslRequired=NONE
+      ./kcadm.sh update realms/master -s sslRequired=NONE
     '
   args:
     executable: /bin/bash
