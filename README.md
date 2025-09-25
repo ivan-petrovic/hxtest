@@ -120,7 +120,7 @@ The design choices it this project are justified as follows:
 The current setup is designed as a lightweight demo, but it can be extended in several ways to improve security, scalability, and production readiness:
 * **Enable TLS with Let’s Encrypt and Azure DNS**
 
-Secure the application with HTTPS certificates and integrate with Azure DNS for domain management.
+  Secure the application with HTTPS certificates and integrate with Azure DNS for domain management.
 * **Manage sensitive variables more securely**
   * Use **Ansible Vault** for encrypted variables, or
   * Integrate with an **external secrets store** (e.g., Azure Key Vault).
@@ -170,7 +170,7 @@ This demo imports a custom Keycloak realm: `myrealm` (see `ansible\roles\keycloa
   * `USER_NAME`
   * `USER_PASSWORD`
 
-(defined in see `ansible\roles\keycloak-stack\defaults\main.yml`).
+  (defined in see `ansible\roles\keycloak-stack\defaults\main.yml`).
 
 ### Keycloak HTTPS
 By default, Keycloak runs in HTTPS mode.
@@ -194,11 +194,11 @@ Several sensitive defaults can be overridden using environment variables (option
 ```
 az login
 ```
-Ensure your account has sufficient privileges.
+  Ensure your account has sufficient privileges.
 
 2. **Prepare Terraform state storage**
 
-Either use the Azure backend (see above) or comment out backend.tf to store the state locally.
+  Either use the Azure backend (see above) or comment out backend.tf to store the state locally.
 
 3. **Provision the environment**
 ```
