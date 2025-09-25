@@ -78,6 +78,7 @@ In Azure, the following infrastructure is provisioned:
   * **SSH** (22)
   * **HTTP/HTTPS** (80/443)
   * **Keycloak** (8080)
+
 All other ports are blocked from the Internet. Specifically:
 * **Postgres** (5432) and **OAuth2 Proxy** (4180) are only accessible on the internal Docker bridge network.
 
@@ -89,30 +90,6 @@ On the Azure VM, Docker Engine is installed, and services are orchestrated with 
 * **Web** - Nginx serving the static website
 * **Nginx Proxy** - handles external requests and routes them internally
 
-```mermaid
-graph TD
-    subgraph AzureVNet["Azure VNet-Priv SN"]
-        VM["Azure VM + Public IP + NSG"]
-        
-        subgraph Docker["Docker Bridge Network"]
-            KC["Keycloak"]
-            PG["Postgres"]
-            O2P["OAuth2 Proxy"]
-            WEB["Static Website - NGINX"]
-            NGINX["NGINX Proxy"]
-        end
-    end
-
-    Internet[[Internet]] -->|"SSH 22, HTTP/HTTPS 80/443, Keycloak 8080"| VM
-    VM --> Docker
-
-    %% Internal connections
-    KC <-->|"DB Connection 5432"| PG
-    O2P <-->|"Auth Tokens"| KC
-    NGINX --> O2P
-    O2P --> WEB
-```
-
 ### Request Flow
 1. User visits `http://<VM_PUBLIC_IP>/`.
 2. **Nginx** forwards the request to **OAuth2 Proxy**.
@@ -121,17 +98,6 @@ graph TD
 5. **OAuth2 Proxy** exchanges the code for tokens with **Keycloak**.
 6. Upon successful validation, **OAuth2 Proxy** sets a session cookie and forwards the original request to the upstream **web (Nginx)** container.
 7. The user sees static webpage.
-
-```mermaid
-flowchart TD
-    U["User Browser"] -->|1. Visit http://PUBLIC_HOSTNAME/| NginxProxy["Nginx Proxy"]
-    NginxProxy -->|2. Forward request| O2P["OAuth2 Proxy"]
-    O2P -->|3. Redirect to login if not authenticated| KC["Keycloak"]
-    KC -->|4. Redirect back with auth code| O2P
-    O2P -->|5. Exchange code for tokens| KC
-    O2P -->|6. Validate token & set cookie| WEB["Static Website - NGINX"]
-    WEB -->|7. Return static page| U
-```
 
 ## Justification
 The design choices it this project are justified as follows:
@@ -162,11 +128,12 @@ Secure the application with HTTPS certificates and integrate with Azure DNS for 
   * Run Keycloak on a dedicated VM.
   * Use an **Azure Load Balancer** with **Virtual Machine Scale Sets (VMSS)** for the web application to enable auto-scaling.
 * **Adopt managed services for production**
-For a production-ready deployment, migrate to:
+
+  For a production-ready deployment, migrate to:
   * **Azure Kubernetes Service (AKS)** for container orchestration.
   * A **managed database service** (e.g., Azure Database for PostgreSQL).
 
-This is not necessary for the demo setup, as it would add complexity and cost.
+  This is not necessary for the demo setup, as it would add complexity and cost.
 
 ## Additional notes
 
@@ -211,7 +178,7 @@ By default, Keycloak runs in HTTPS mode.
 For this demo, HTTPS is **disabled** after keycloak container becomes ready (configured in  `ansible\roles\keycloak-stack\tasks\main.yml`).
 * The Keycloak UI is then available at `http://<VM_PUBLIC_IP>:8080`.
 * Default username and password for Keycloak: `admin` and `AdminPassword123`.
-* To encure reliability, Ansible checks the Keycloak health endpoint (up to 5 minutes), before starting dependent containers like OAuth2 Proxy.
+* To ensure reliability, Ansible checks the Keycloak health endpoint (up to 5 minutes), before starting dependent containers like OAuth2 Proxy.
 
 ### Customization of Sensitive Data
 Several sensitive defaults can be overridden using environment variables (optionally stored in GitHub secrets):
@@ -230,6 +197,7 @@ az login
 Ensure your account has sufficient privileges.
 
 2. **Prepare Terraform state storage**
+
 Either use the Azure backend (see above) or comment out backend.tf to store the state locally.
 
 3. **Provision the environment**
